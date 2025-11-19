@@ -340,3 +340,85 @@ button:hover {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+
+/* 경기 및 예매 섹션 */
+.matches-section,
+.bookings-section {
+  margin-top: 30px;
+}
+
+.matches-section h3,
+.bookings-section h3 {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.match-card,
+.booking-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.match-info,
+.booking-info {
+  flex: 1;
+}
+
+.match-teams,
+.booking-teams {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.match-details,
+.booking-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+  color: #666;
+}
+
+.book-btn {
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.book-btn:hover {
+  background: #5568d3;
+}
+
+.booking-status {
+  font-size: 14px;
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  font-size: 14px;
+}

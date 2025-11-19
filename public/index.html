@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>축구 티켓팅 시스템</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="stadium.css">
 </head>
 <body>
   <!-- 모니터링 토글 버튼 -->
@@ -105,10 +106,84 @@
           <h2>환영합니다! 🎉</h2>
           <p>축구 경기 티켓을 예매하세요.</p>
         </div>
+
+        <!-- 경기 목록 -->
+        <div class="matches-section">
+          <h3>예매 가능한 경기</h3>
+          <div id="matches-list"></div>
+        </div>
+
+        <!-- 내 예매 내역 -->
+        <div class="bookings-section">
+          <h3>내 예매 내역</h3>
+          <div id="bookings-list"></div>
+        </div>
       </div>
 
       <!-- 메시지 표시 -->
       <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <!-- 경기장 좌석 선택 모달 -->
+  <div class="stadium-modal" id="stadium-modal">
+    <div class="stadium-container">
+      <div class="stadium-header">
+        <div class="stadium-title">
+          <h3 id="modal-match-title">경기 선택</h3>
+          <p id="modal-match-info">경기 정보</p>
+        </div>
+        <button class="close-modal-btn" onclick="closeStadiumModal()">✕</button>
+      </div>
+
+      <div class="stadium-layout">
+        <!-- 필드 -->
+        <div class="pitch">⚽ PITCH ⚽</div>
+        
+        <!-- North Stand (상단) -->
+        <div class="stand north-stand" id="north-stand"></div>
+        
+        <!-- West Stand (좌측) -->
+        <div class="stand west-stand" id="west-stand"></div>
+        
+        <!-- East Stand (우측) -->
+        <div class="stand east-stand" id="east-stand"></div>
+        
+        <!-- South Stand (하단) -->
+        <div class="stand south-stand" id="south-stand"></div>
+      </div>
+
+      <div class="seat-legend">
+        <div class="legend-item">
+          <div class="legend-seat available"></div>
+          <span>예매 가능</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-seat selected"></div>
+          <span>선택한 좌석</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-seat booked"></div>
+          <span>예매 완료</span>
+        </div>
+      </div>
+
+      <div class="booking-info-panel">
+        <h4>예매 정보</h4>
+        <div class="booking-details-grid">
+          <div class="booking-detail-item">
+            <span class="booking-detail-label">선택한 좌석</span>
+            <span class="booking-detail-value" id="selected-seat-display">-</span>
+          </div>
+          <div class="booking-detail-item">
+            <span class="booking-detail-label">결제 금액</span>
+            <span class="booking-detail-value price" id="selected-price-display">0원</span>
+          </div>
+        </div>
+        <button class="confirm-booking-btn" id="confirm-booking-btn" onclick="confirmBooking()" disabled>
+          좌석을 선택해주세요
+        </button>
+      </div>
     </div>
   </div>
 

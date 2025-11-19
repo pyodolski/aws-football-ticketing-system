@@ -12,8 +12,10 @@ app.use(express.static("public"));
 // 라우트
 const authRoutes = require("./routes/auth");
 const monitorRoutes = require("./routes/monitor");
+const matchesRoutes = require("./routes/matches");
 app.use("/api/auth", authRoutes);
 app.use("/api/monitor", monitorRoutes);
+app.use("/api/matches", matchesRoutes);
 
 // 헬스체크
 app.get("/health", (req, res) => {

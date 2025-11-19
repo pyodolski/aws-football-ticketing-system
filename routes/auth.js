@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
 
 // 회원가입
@@ -20,10 +22,13 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    // 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // 사용자 생성
     const [result] = await pool.query(
       "INSERT INTO users (email, password, name, phone) VALUES (?, ?, ?, ?)",
-      [email, password, name, phone]
+      [email, hashedPassword, name, phone]
     );
 
     res.status(201).json({
@@ -46,8 +51,8 @@ router.post("/login", async (req, res) => {
 
   try {
     const [users] = await pool.query(
-      "SELECT id, email, name, phone FROM users WHERE email = ? AND password = ?",
-      [email, password]
+      "SELECT id, email, password, name, phone FROM users WHERE email = ?",
+      [email]
     );
 
     if (users.length === 0) {
@@ -58,9 +63,31 @@ router.post("/login", async (req, res) => {
     }
 
     const user = users[0];
+
+    // 비밀번호 검증
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "이메일 또는 비밀번호가 올바르지 않습니다.",
+      });
+    }
+
+    // JWT 토큰 생성
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
     res.json({
       success: true,
       message: "로그인 성공",
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -77,4 +104,37 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// JWT 검증 미들웨어
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "인증 토큰이 필요합니다.",
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({
+        success: false,
+        message: "유효하지 않은 토큰입니다.",
+      });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// 토큰 검증 엔드포인트
+router.get("/verify", authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user,
+  });
+});
+
 module.exports = router;
+module.exports.authenticateToken = authenticateToken;
