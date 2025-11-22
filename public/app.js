@@ -525,30 +525,59 @@ async function startLoadTest() {
   document.getElementById("start-load-btn").disabled = true;
   document.getElementById("stop-load-btn").disabled = false;
   document.getElementById("load-test-status").textContent =
-    "부하 테스트 진행 중... 🔥";
+    "🎫 인기 경기 티켓 오픈 시뮬레이션 중...";
   document.getElementById("load-test-stats").style.display = "block";
 
-  // 동시에 여러 요청 보내기
+  // 티켓팅 시나리오 시뮬레이션
   loadTestInterval = setInterval(() => {
-    // 동시에 10개의 요청 보내기
-    for (let i = 0; i < 10; i++) {
-      sendLoadRequest();
+    // 동시에 20명의 사용자가 티켓팅 시도
+    for (let i = 0; i < 20; i++) {
+      simulateTicketingUser();
     }
-  }, 100); // 0.1초마다 10개씩 = 초당 100개 요청
+  }, 200); // 0.2초마다 20명씩 = 초당 100명의 사용자
 }
 
-async function sendLoadRequest() {
+async function simulateTicketingUser() {
   requestCount++;
   updateLoadTestStats();
 
   try {
-    // 랜덤하게 다양한 엔드포인트 호출
-    const endpoints = ["/api/matches", "/api/monitor/system", "/health"];
+    // 실제 티켓팅 플로우 시뮬레이션
+    const scenarios = [
+      // 시나리오 1: 경기 목록 조회 (40%)
+      async () => {
+        const response = await fetch("/api/matches");
+        return response.ok;
+      },
+      // 시나리오 2: 특정 경기의 예매된 좌석 조회 (30%)
+      async () => {
+        const matchId = Math.floor(Math.random() * 5) + 1; // 1-5번 경기
+        const response = await fetch(`/api/matches/${matchId}/booked-seats`);
+        return response.ok;
+      },
+      // 시나리오 3: 시스템 모니터링 (20%)
+      async () => {
+        const response = await fetch("/api/monitor/system");
+        return response.ok;
+      },
+      // 시나리오 4: 헬스 체크 (10%)
+      async () => {
+        const response = await fetch("/health");
+        return response.ok;
+      },
+    ];
 
-    const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)];
-    const response = await fetch(endpoint);
+    // 가중치에 따라 시나리오 선택
+    const rand = Math.random();
+    let scenario;
+    if (rand < 0.4) scenario = scenarios[0];
+    else if (rand < 0.7) scenario = scenarios[1];
+    else if (rand < 0.9) scenario = scenarios[2];
+    else scenario = scenarios[3];
 
-    if (response.ok) {
+    const success = await scenario();
+
+    if (success) {
       successCount++;
     } else {
       errorCount++;
@@ -559,6 +588,8 @@ async function sendLoadRequest() {
 
   updateLoadTestStats();
 }
+
+// sendLoadRequest는 이제 simulateTicketingUser로 대체됨
 
 function updateLoadTestStats() {
   document.getElementById("request-count").textContent = requestCount;
@@ -576,5 +607,5 @@ function stopLoadTest() {
   document.getElementById("stop-load-btn").disabled = true;
   document.getElementById(
     "load-test-status"
-  ).textContent = `부하 테스트 완료! 총 ${requestCount}개 요청`;
+  ).textContent = `티켓팅 시뮬레이션 완료! 총 ${requestCount}명의 사용자`;
 }
